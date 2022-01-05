@@ -1,0 +1,12 @@
+# Disable the "core" go plugins
+disablePlugins:
+  - lando-go
+
+# Make sure we are dogfooding this plugin for testing purposes
+plugins:
+  "@lando/go": /home/runner/work/go/go
+
+# Disable metrics reporting
+stats:
+  - report: false
+    url: https://metrics.lando.dev
