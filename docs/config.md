@@ -1,0 +1,45 @@
+---
+title: Configuration
+description: Learn how to configure the Lando Go service.
+---
+
+# Configuration
+
+Here are the configuration options, set to the default values, for this service. If you are unsure about where this goes or what this means we *highly recommend* scanning the [services documentation](https://docs.lando.dev/config/services.html) to get a good handle on how the magicks work.
+
+Also note that options in addition to the [build steps](https://docs.lando.dev/config/services.html#build-steps) and [overrides](https://docs.lando.dev/config/services.html#overrides) that are available to every service are shown below:
+
+```yaml
+services:
+  myservice:
+    type: go:1.13
+    ssl: false
+    command: tail -f /dev/null
+```
+
+### Specifying a command
+
+Note that if you *do not* define a `command` for this service, it will effectively be a "cli" container (e.g. it will not serve or run an application by default but will be available to run `go` commands against).
+
+If you want to actually launch a `go` application, consider setting the `command` to something as shown below:
+
+```yaml
+services:
+  myservice:
+    type: go
+    command: run /app/my-server.go
+```
+
+### Using SSL
+
+Also note that `ssl: true` will only generate certs in the [default locations](https://docs.lando.dev/config/security.html) and expose port `443`. It is up to the user to use the certs and secure port correctly in their application like as in the `go` snippet below:
+
+```go
+// Starting HTTPS server
+go func() {
+  log.Printf("Staring HTTPS service on :443")
+  if err := http.ListenAndServeTLS(":443", "/certs/cert.crt", "/certs/cert.key", nil); err != nil {
+    // Not important for this example
+  }
+}()
+```
