@@ -9,6 +9,12 @@ description: Add a highly configurable Go service to Lando for local development
 
 You can easily add it to your Lando app by adding an entry to the [services](https://docs.lando.dev/config/services.html) top-level config in your [Landofile](https://docs.lando.dev/config/lando.html).
 
+```yaml
+services:
+  myservice:
+    type: go:1.13.9
+```
+
 ## Supported versions
 
 *   **[1.16](https://hub.docker.com/_/golang/)** **(default)**
