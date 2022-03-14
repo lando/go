@@ -17,7 +17,7 @@ services:
     command: tail -f /dev/null
 ```
 
-### Specifying a command
+## Specifying a command
 
 Note that if you *do not* define a `command` for this service, it will effectively be a "cli" container (e.g. it will not serve or run an application by default but will be available to run `go` commands against).
 
@@ -30,7 +30,7 @@ services:
     command: run /app/my-server.go
 ```
 
-### Using SSL
+## Using SSL
 
 Also note that `ssl: true` will only generate certs in the [default locations](https://docs.lando.dev/config/security.html) and expose port `443`. It is up to the user to use the certs and secure port correctly in their application like as in the `go` snippet below:
 
