@@ -27,7 +27,7 @@ If you want to actually launch a `go` application, consider setting the `command
 services:
   myservice:
     type: go
-    command: run /app/my-server.go
+    command: go run /app/my-server.go
 ```
 
 ## Using SSL
