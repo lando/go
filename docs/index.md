@@ -18,6 +18,9 @@ services:
 
 ## Supported versions
 
+*   [1.19](https://hub.docker.com/_/golang/)
+*   [1.18](https://hub.docker.com/_/golang/)
+*   [1.17](https://hub.docker.com/_/golang/)
 *   **[1.16](https://hub.docker.com/_/golang/)** **(default)**
 *   [1.15](https://hub.docker.com/_/golang/)
 *   [1.14](https://hub.docker.com/_/golang/)
