@@ -11,11 +11,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        leia-tests:
+        leia-test:
           - examples/1.x
           - examples/custom
-        lando-versions:
-          - edge
+        lando-version:
+          - 3-dev
         os:
           - ubuntu-22.04
         node-version:
