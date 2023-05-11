@@ -22,8 +22,8 @@ Verification commands
 Run the following commands to validate things are rolling as they should.
 
 ```bash
-# Should use 1.14 as the default version
-lando ssh -s defaults -c "go version | grep go1.17"
+# Should use 1.19 as specified in landofile
+lando ssh -s defaults -c "go version | grep go1.19"
 
 # Should run only on port 80 by default
 lando ssh -s defaults -c "curl http://localhost" | grep HEART
