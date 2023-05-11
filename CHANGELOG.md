@@ -1,6 +1,12 @@
+## v0.8.0 - [May 11, 2023](https://github.com/lando/go/releases/tag/v0.8.0)
+
+* Added support for `go:1.18`
+* Added support for `go:1.19`
+
 ## v0.7.0 - [December 12, 2022](https://github.com/lando/go/releases/tag/v0.7.0)
-  * Added bundle-dependencies to release process.
-  * Fixed bug in plugin dogfooding test.
+
+* Added bundle-dependencies to release process.
+* Fixed bug in plugin dogfooding test.
 
 ## v0.6.0 - [September 8, 2022](https://github.com/lando/go/releases/tag/v0.6.0)
 
