@@ -138,8 +138,9 @@ jobs:
       fail-fast: false
       matrix:
         leia-test:
-          - examples/2.1
-          - examples/2.2
+          - examples/1.x
+          - examples/2.x
+
 
 ```
 
