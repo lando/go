@@ -51,5 +51,5 @@ services:
     type: go:1.13.9
 ```
 
-But make sure you use one of the available [patch tags](https://hub.docker.com/r/library/golang/tags/) for the underlying image we are using.
+But make sure you use one of the available [patch tags](https://hub.docker.com/_/golang/tags/) for the underlying image we are using.
 
