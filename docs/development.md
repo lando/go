@@ -5,7 +5,7 @@ description: Learn how to develop and contribute to the Lando Go service
 
 # Development
 
-This guide contains information to help onboard developers to work on the [go](https://go.microsoft.com/en-us/) integration, hereafter referred to as *the plugin*.
+This guide contains information to help onboard developers to work on the [go](https://go.dev/) integration, hereafter referred to as *the plugin*.
 
 ## Requirements
 
