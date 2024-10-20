@@ -27,7 +27,7 @@ lando ssh -s defaults -c "go version | grep go1.19"
 
 # Should run only on port 80 by default
 lando ssh -s defaults -c "curl http://localhost" | grep HEART
-lando ssh -s defaults -c "curl https://localhost" || echo $? | grep 1
+lando ssh -s defaults -c "curl https://localhost" || echo $? | grep 7
 
 # Should use the version if specified by user
 lando ssh -s patch -c "go version | grep go1.17.3"
