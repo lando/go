@@ -1,0 +1,81 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+        "config:base",
+        ":semanticCommits",
+        ":semanticPrefixFix",
+        ":automergeMinor",
+        ":automergePr",
+        ":disableRateLimiting"
+    ],
+    "timezone": "UTC",
+    "prConcurrentLimit": 5,
+    "username": "rtfm-47",
+    "gitAuthor": "rtfm-47 <rtfm47@lando.dev>",
+    "regexManagers": [
+        {
+            "fileMatch": [
+                "builders/builders\\.yml$"
+            ],
+            "matchStrings": [
+                "- '(?<currentValue>.*?)'"
+            ],
+            "depNameTemplate": "golang",
+            "datasourceTemplate": "docker",
+            "versioningTemplate": "loose",
+            "extractVersionTemplate": "^1\\."
+        },
+        {
+            "fileMatch": [
+                "README\\.md$",
+                "docs/.*\\.md$"
+            ],
+            "matchStrings": [
+                "type: go:(?<currentValue>1\\.[0-9]+)"
+            ],
+            "depNameTemplate": "golang",
+            "datasourceTemplate": "docker",
+            "versioningTemplate": "loose",
+            "extractVersionTemplate": "^1\\."
+        }
+    ],
+    "packageRules": [
+        {
+            "matchPackageNames": [
+                "golang"
+            ],
+            "matchDatasources": [
+                "docker"
+            ],
+            "groupName": "golang versions",
+            "schedule": [
+                "after 3:15am and before 5am on monday"
+            ],
+            "separateMinorPatch": true,
+            "automerge": true,
+            "platformAutomerge": true,
+            "labels": [
+                "dependencies",
+                "golang"
+            ],
+            "addChangelogToBody": true,
+            "versioning": "loose",
+            "allowedVersions": "/^1\\./",
+            "prBodyNotes": [
+                "This PR will update CHANGELOG.md automatically upon merge."
+            ]
+        }
+    ],
+    "prBodyTemplate": "{{{header}}}{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}{{{footer}}}",
+    "prFooter": "This PR was created by highly tuned robots using [Renovate](https://renovatebot.com) 🤖",
+    "updateInternalDeps": true,
+    "postUpgradeTasks": {
+        "commands": [
+            "if [[ \"${depName}\" == \"golang\" ]]; then echo \"## [${newVersion}] - $(date +%Y-%m-%d)\\n\\n### Changed\\n\\n* Added Go ${newVersion} to supported versions\\n\" >> CHANGELOG.md; fi"
+        ],
+        "fileFilters": [
+            "CHANGELOG.md"
+        ],
+        "executionMode": "update"
+    }
+}

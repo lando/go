@@ -26,7 +26,7 @@ If you want to actually launch a `go` application, consider setting the `command
 ```yaml
 services:
   myservice:
-    type: go
+    type: go:1.19
     command: go run /app/my-server.go
 ```
 
