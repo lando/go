@@ -1,0 +1,56 @@
+name: Renovate
+on:
+  schedule:
+    - cron: '15 3 * * *'  # Run at 3:15 AM UTC
+  workflow_dispatch:      # Allow manual triggering
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  packages: read
+
+env:
+  cache_dir: /tmp/renovate/cache/renovate/repository
+  cache_key: renovate-cache
+
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Restore cache from previous runs
+      - uses: actions/cache@v4
+        with:
+          path: ${{ env.cache_dir }}
+          key: ${{ env.cache_key }}-${{ github.sha }}
+          restore-keys: |
+            ${{ env.cache_key }}-
+
+      # Fix cache permissions
+      - name: Fix cache permissions
+        run: |
+          if [ -d "${{ env.cache_dir }}" ]; then
+            sudo chown -R 12021:0 /tmp/renovate/
+          fi
+
+      - name: Self-hosted Renovate
+        uses: renovatebot/github-action@v41.0.16
+        with:
+          token: ${{ secrets.RTFM47_COAXIUM_INJECTOR }}
+          configurationFile: renovate.json
+        env:
+          LOG_LEVEL: 'debug'  # Enable debug logging
+          RENOVATE_REPOSITORY_CACHE: 'enabled'
+          RENOVATE_PLATFORM_COMMIT: 'true'
+          RENOVATE_USERNAME: 'rtfm-47'
+          RENOVATE_GIT_AUTHOR: 'rtfm-47 <rtfm47@lando.dev>'
+
+      # Save cache for future runs
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: ${{ env.cache_dir }}
+          key: ${{ env.cache_key }}-${{ github.sha }} 

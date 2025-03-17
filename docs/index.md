@@ -13,7 +13,7 @@ You can easily add it to your Lando app by adding an entry to the [services](htt
 ```yaml
 services:
   myservice:
-    type: go
+    type: go:1.19
 ```
 
 ## Supported versions
