@@ -2,18 +2,18 @@
 
 // Modules
 const _ = require('lodash');
+const yaml = require('js-yaml');
+const fs = require('fs');
+const path = require('path');
+
+// Load config
+const configPath = path.join(__dirname, 'builders.yml');
+const {go: config} = yaml.load(fs.readFileSync(configPath, 'utf8'));
 
 // Builder
 module.exports = {
   name: 'go',
-  config: {
-    version: '1.17',
-    supported: ['1.19', '1.18', '1.17', '1.16', '1.15', '1.14', '1.13'],
-    patchesSupported: true,
-    legacy: ['1.12', '1.11', '1.10', '1.9', '1.8'],
-    command: 'tail -f /dev/null',
-    ssl: false,
-  },
+  config: config,
   parent: '_appserver',
   builder: (parent, config) => class LandoGo extends parent {
     constructor(id, options = {}) {
