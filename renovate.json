@@ -16,12 +16,14 @@
                 "builders/builders\\.yml$"
             ],
             "matchStrings": [
-                "  supported:[\\s\\S]*?    - '(?<currentValue>1\\.[0-9]+)'"
+                "(?<prefix>  supported:.*?)(?<currentValue>(?:    - '[0-9]+\\.[0-9]+'.*)*)(?<suffix>\\n  legacy:)"
             ],
             "depNameTemplate": "golang-latest-version",
             "datasourceTemplate": "docker",
             "packageNameTemplate": "golang",
-            "versioningTemplate": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)$"
+            "versioningTemplate": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)$",
+            "extractVersionTemplate": "^(?<version>1\\.[0-9]+)",
+            "autoReplaceStringTemplate": "{{{prefix}}}    - '{{{newVersion}}}'\n{{{currentValue}}}{{{suffix}}}"
         },
         {
             "customType": "regex",
@@ -86,11 +88,10 @@
     "updateInternalDeps": true,
     "postUpgradeTasks": {
         "commands": [
-            "if [[ \"${depName}\" == \"golang-latest-version\" ]]; then MAJOR_MINOR=$(echo \"${newVersion}\" | grep -oE '^[0-9]+\\.[0-9]+'); sed -i \"/  supported:/a\\    - '${MAJOR_MINOR}'\" builders/builders.yml; echo \"## [${MAJOR_MINOR}] - $(date +%Y-%m-%d)\\n\\n### Changed\\n\\n* Added Go ${MAJOR_MINOR} to supported versions\\n\" >> CHANGELOG.md; fi"
+            "if [[ \"${depName}\" == \"golang-latest-version\" ]]; then MAJOR_MINOR=$(echo \"${newVersion}\" | grep -oE '^[0-9]+\\.[0-9]+'); echo \"## [${MAJOR_MINOR}] - $(date +%Y-%m-%d)\\n\\n### Changed\\n\\n* Added Go ${MAJOR_MINOR} to supported versions\\n\" >> CHANGELOG.md; fi"
         ],
         "fileFilters": [
-            "CHANGELOG.md",
-            "builders/builders.yml"
+            "CHANGELOG.md"
         ],
         "executionMode": "update"
     }
