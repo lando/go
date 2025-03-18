@@ -69,7 +69,7 @@
                 "golang"
             ],
             "versioning": "loose",
-            "allowedVersions": "^1."
+            "allowedVersions": "^1"
         }
     ],
     "prBodyTemplate": "{{{header}}}{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}{{{footer}}}",
