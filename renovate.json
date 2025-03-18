@@ -16,21 +16,9 @@
                 "builders/builders\\.yml$"
             ],
             "matchStrings": [
-                "  version: '(?<currentValue>.*?)'"
+                "  supported:[\\s\\S]*?    - '(?<currentValue>1\\.[0-9]+)'"
             ],
-            "depNameTemplate": "golang",
-            "datasourceTemplate": "docker",
-            "versioningTemplate": "loose"
-        },
-        {
-            "customType": "regex",
-            "fileMatch": [
-                "builders/builders\\.yml$"
-            ],
-            "matchStrings": [
-                "  supported:[\\s\\S]*?    - '(?<currentValue>.*?)'"
-            ],
-            "depNameTemplate": "golang-latest-supported",
+            "depNameTemplate": "golang-latest-version",
             "datasourceTemplate": "docker",
             "packageNameTemplate": "golang",
             "versioningTemplate": "loose"
@@ -45,7 +33,7 @@
             "matchStrings": [
                 "type: go:(?<currentValue>1\\.[0-9]+)"
             ],
-            "depNameTemplate": "golang-in-examples",
+            "depNameTemplate": "golang-docs-examples",
             "datasourceTemplate": "docker",
             "packageNameTemplate": "golang",
             "versioningTemplate": "loose"
@@ -54,66 +42,43 @@
     "packageRules": [
         {
             "matchPackageNames": [
-                "golang"
+                "golang-latest-version",
+                "golang-docs-examples"
             ],
             "matchDatasources": [
                 "docker"
             ],
-            "groupName": "golang versions",
+            "groupName": "golang minor versions",
             "schedule": [
                 "after 3:15am and before 5am on monday"
             ],
-            "separateMinorPatch": true,
+            "matchUpdateTypes": [
+                "minor"
+            ],
             "automerge": true,
             "platformAutomerge": true,
             "labels": [
                 "dependencies",
                 "golang"
-            ],
-            "versioning": "loose",
-            "allowedVersions": "^1"
+            ]
         },
         {
             "matchPackageNames": [
-                "golang-latest-supported"
+                "golang-latest-version",
+                "golang-docs-examples"
             ],
             "matchDatasources": [
                 "docker"
             ],
-            "groupName": "golang versions",
-            "schedule": [
-                "after 3:15am and before 5am on monday"
-            ],
-            "separateMinorPatch": false,
-            "automerge": true,
-            "platformAutomerge": true,
-            "labels": [
-                "dependencies",
-                "golang"
-            ],
-            "versioning": "loose",
-            "allowedVersions": "^1"
-        },
-        {
-            "matchPackageNames": [
-                "golang-in-examples"
-            ],
-            "matchDatasources": [
-                "docker"
-            ],
-            "groupName": "golang versions",
-            "schedule": [
-                "after 3:15am and before 5am on monday"
-            ],
-            "separateMinorPatch": false,
-            "automerge": true,
-            "platformAutomerge": true,
-            "labels": [
-                "dependencies",
-                "golang"
-            ],
-            "versioning": "loose",
-            "allowedVersions": "^1"
+            "enabled": false,
+            "matchUpdateTypes": [
+                "major",
+                "patch",
+                "pin",
+                "digest",
+                "rollback",
+                "bump"
+            ]
         }
     ],
     "prBodyTemplate": "{{{header}}}{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}{{{footer}}}",
@@ -121,7 +86,7 @@
     "updateInternalDeps": true,
     "postUpgradeTasks": {
         "commands": [
-            "if [[ \"${depName}\" == \"golang-latest-supported\" ]]; then MAJOR_MINOR=$(echo \"${newVersion}\" | grep -oE '^[0-9]+\\.[0-9]+'); sed -i \"/  supported:/a\\    - '${MAJOR_MINOR}'\" builders/builders.yml; echo \"## [${MAJOR_MINOR}] - $(date +%Y-%m-%d)\\n\\n### Changed\\n\\n* Added Go ${MAJOR_MINOR} to supported versions\\n* Updated documentation and examples to reference Go ${MAJOR_MINOR} as the latest version\\n\" >> CHANGELOG.md; fi"
+            "if [[ \"${depName}\" == \"golang-latest-version\" ]]; then MAJOR_MINOR=$(echo \"${newVersion}\" | grep -oE '^[0-9]+\\.[0-9]+'); sed -i \"/  supported:/a\\    - '${MAJOR_MINOR}'\" builders/builders.yml; echo \"## [${MAJOR_MINOR}] - $(date +%Y-%m-%d)\\n\\n### Changed\\n\\n* Added Go ${MAJOR_MINOR} to supported versions\\n\" >> CHANGELOG.md; fi"
         ],
         "fileFilters": [
             "CHANGELOG.md",
