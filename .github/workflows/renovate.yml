@@ -13,6 +13,8 @@ permissions:
 env:
   LOG_LEVEL: debug
   RENOVATE_CONFIG_FILE: renovate.json
+  cache_dir: /tmp/renovate/
+  cache_key: renovate-cache
 
 jobs:
   renovate:
