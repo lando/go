@@ -1,49 +1,40 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "extends": [
-        "config:base",
-        ":semanticCommits",
-        ":semanticPrefixFix",
-        ":automergeMinor",
-        ":automergePr",
-        ":disableRateLimiting"
+        "config:recommended"
     ],
     "enabledManagers": [
-        "regex"
-    ],
-    "repositories": [
-        "lando/go"
+        "custom.regex"
     ],
     "timezone": "UTC",
     "prConcurrentLimit": 5,
-    "username": "rtfm-47",
     "gitAuthor": "rtfm-47 <rtfm47@lando.dev>",
-    "regexManagers": [
+    "customManagers": [
         {
+            "customType": "regex",
             "fileMatch": [
                 "builders/builders\\.yml$"
             ],
             "matchStrings": [
-                "- '(?<currentValue>.*?)'"
+                "- \"(?<currentValue>.*?)\""
             ],
             "depNameTemplate": "golang",
             "datasourceTemplate": "docker",
-            "versioningTemplate": "loose",
-            "extractVersionTemplate": "^1\\."
+            "versioningTemplate": "loose"
         },
         {
+            "customType": "regex",
             "fileMatch": [
                 "README\\.md$",
                 "docs/.*\\.md$",
                 "examples/.*/.lando\\.yml$"
             ],
             "matchStrings": [
-                "type: go:(?<currentValue>1\\.19(?!\\.))"
+                "type: go:(?<currentValue>\\d+\\.\\d+)"
             ],
             "depNameTemplate": "golang",
             "datasourceTemplate": "docker",
-            "versioningTemplate": "loose",
-            "extractVersionTemplate": "^1\\."
+            "versioningTemplate": "loose"
         }
     ],
     "packageRules": [
@@ -65,16 +56,12 @@
                 "dependencies",
                 "golang"
             ],
-            "addChangelogToBody": true,
             "versioning": "loose",
-            "allowedVersions": "/^1\\./",
-            "prBodyNotes": [
-                "This PR will update CHANGELOG.md automatically upon merge."
-            ]
+            "allowedVersions": "^1\\."
         }
     ],
     "prBodyTemplate": "{{{header}}}{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}{{{footer}}}",
-    "prFooter": "This PR was created by highly tuned robots using [Renovate](https://renovatebot.com) 🤖",
+    "prFooter": "These are the droids you are looking for: [Renovate](https://renovatebot.com) 🤖",
     "updateInternalDeps": true,
     "postUpgradeTasks": {
         "commands": [
@@ -84,6 +71,5 @@
             "CHANGELOG.md"
         ],
         "executionMode": "update"
-    },
-    "logLevel": "debug"
+    }
 }
