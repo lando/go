@@ -16,7 +16,19 @@
                 "builders/builders\\.yml$"
             ],
             "matchStrings": [
-                "- \"(?<currentValue>.*?)\""
+                "  version: '(?<currentValue>.*?)'"
+            ],
+            "depNameTemplate": "golang",
+            "datasourceTemplate": "docker",
+            "versioningTemplate": "loose"
+        },
+        {
+            "customType": "regex",
+            "fileMatch": [
+                "builders/builders\\.yml$"
+            ],
+            "matchStrings": [
+                "    - '(?<currentValue>.*?)'"
             ],
             "depNameTemplate": "golang",
             "datasourceTemplate": "docker",

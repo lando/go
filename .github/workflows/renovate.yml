@@ -49,6 +49,7 @@ jobs:
           RENOVATE_USERNAME: 'rtfm-47'
           RENOVATE_GIT_AUTHOR: 'rtfm-47 <rtfm47@lando.dev>'
           RENOVATE_BASE_BRANCHES: '["main"]'
+          RENOVATE_REPOSITORIES: '["lando/go"]'
 
       # Save cache for future runs
       - uses: actions/cache/save@v4
