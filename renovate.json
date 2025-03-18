@@ -21,7 +21,7 @@
             "depNameTemplate": "golang-latest-version",
             "datasourceTemplate": "docker",
             "packageNameTemplate": "golang",
-            "versioningTemplate": "loose"
+            "versioningTemplate": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)$"
         },
         {
             "customType": "regex",
@@ -36,7 +36,7 @@
             "depNameTemplate": "golang-docs-examples",
             "datasourceTemplate": "docker",
             "packageNameTemplate": "golang",
-            "versioningTemplate": "loose"
+            "versioningTemplate": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)$"
         }
     ],
     "packageRules": [
