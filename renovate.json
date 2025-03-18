@@ -32,7 +32,8 @@
             ],
             "depNameTemplate": "golang",
             "datasourceTemplate": "docker",
-            "versioningTemplate": "loose"
+            "versioningTemplate": "loose",
+            "extractVersionTemplate": "^(?<version>\\d+\\.\\d+)"
         },
         {
             "customType": "regex",
@@ -46,7 +47,8 @@
             ],
             "depNameTemplate": "golang",
             "datasourceTemplate": "docker",
-            "versioningTemplate": "loose"
+            "versioningTemplate": "loose",
+            "currentValueTemplate": "{{#lookupJson builders\\.yml}}go.supported[0]{{/lookupJson}}"
         }
     ],
     "packageRules": [
