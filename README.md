@@ -13,7 +13,7 @@ Add a `go` service to your Landofile
 ```yaml
 services:
   myservice:
-    type: go:1.19
+    type: go:1.24
 ```
 
 For more info you should check out the [docs](https://docs.lando.dev/go):
