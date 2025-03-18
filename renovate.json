@@ -8,6 +8,12 @@
         ":automergePr",
         ":disableRateLimiting"
     ],
+    "enabledManagers": [
+        "regex"
+    ],
+    "repositories": [
+        "lando/go"
+    ],
     "timezone": "UTC",
     "prConcurrentLimit": 5,
     "username": "rtfm-47",
@@ -28,10 +34,11 @@
         {
             "fileMatch": [
                 "README\\.md$",
-                "docs/.*\\.md$"
+                "docs/.*\\.md$",
+                "examples/.*/.lando\\.yml$"
             ],
             "matchStrings": [
-                "type: go:(?<currentValue>1\\.[0-9]+)"
+                "type: go:(?<currentValue>1\\.19(?!\\.))"
             ],
             "depNameTemplate": "golang",
             "datasourceTemplate": "docker",
@@ -71,11 +78,12 @@
     "updateInternalDeps": true,
     "postUpgradeTasks": {
         "commands": [
-            "if [[ \"${depName}\" == \"golang\" ]]; then echo \"## [${newVersion}] - $(date +%Y-%m-%d)\\n\\n### Changed\\n\\n* Added Go ${newVersion} to supported versions\\n\" >> CHANGELOG.md; fi"
+            "if [[ \"${depName}\" == \"golang\" ]]; then echo \"## [${newVersion}] - $(date +%Y-%m-%d)\\n\\n### Changed\\n\\n* Added Go ${newVersion} to supported versions\\n* Updated documentation and examples to reference Go ${newVersion} as the latest version\\n\" >> CHANGELOG.md; fi"
         ],
         "fileFilters": [
             "CHANGELOG.md"
         ],
         "executionMode": "update"
-    }
+    },
+    "logLevel": "debug"
 }
