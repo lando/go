@@ -16,4 +16,4 @@ go:
     - '1.9'
     - '1.8'
   command: 'tail -f /dev/null'
-  ssl: false 
+  ssl: false
