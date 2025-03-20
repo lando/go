@@ -19,16 +19,12 @@
         "builders/builders.yml"
       ],
       "matchStrings": [
-        "supported:\\n\\s+- '(?<currentVersion>.*?)'"
+        "supported:\\n\\s+- '(?<currentValue>.*?)'"
       ],
-      "datasource": "github-releases",
-      "lookupName": "go/go",
-      "versioning": "semver",
-      "currentVersionTemplate": "go{{currentVersion}}",
-      "updateDependency": {
-        "regex": "supported:\\n([\\s\\S]*?)(?=\\nlegacy:|$)",
-        "replacement": "supported:\n- '{{substr newVersion 2}}'\n{{captured_group}}"
-      }
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "go/go",
+      "versioningTemplate": "semver",
+      "currentValueTemplate": "go{{currentValue}}"
     }
   ]
 }
