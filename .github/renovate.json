@@ -11,6 +11,7 @@
   "gitAuthor": "rtfm-47 <rtfm47@lando.dev>",
   "customManagers": [
     {
+      "description": "Update the supported Go versions in the builders",
       "customType": "regex",
       "fileMatch": [
         "builders/builders\\.yml$"
@@ -26,6 +27,7 @@
       "autoReplaceStringTemplate": "{{{prefix}}}    - '{{{newVersion}}}'\n{{{currentValue}}}{{{suffix}}}"
     },
     {
+      "description": "Update the latest supported Go version in the docs and examples",
       "customType": "regex",
       "fileMatch": [
         "README\\.md$",

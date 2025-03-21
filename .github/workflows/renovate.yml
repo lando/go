@@ -3,6 +3,9 @@ on:
   schedule:
     - cron: '15 3 * * *'  # Run at 3:15 AM UTC
   workflow_dispatch:      # Allow manual triggering
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
@@ -12,7 +15,7 @@ permissions:
 
 env:
   LOG_LEVEL: debug
-  RENOVATE_CONFIG_FILE: renovate.json
+  RENOVATE_CONFIG_FILE: .github/renovate.json
   cache_dir: /tmp/renovate/
   cache_key: renovate-cache
 
