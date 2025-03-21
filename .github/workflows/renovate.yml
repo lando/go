@@ -1,11 +1,10 @@
 name: Renovate
 on:
   schedule:
-    - cron: '15 3 * * *'  # Run at 3:15 AM UTC
-  workflow_dispatch:      # Allow manual triggering
+    - cron: '0/15 * * * *'  # Run every 15 minutes
+  workflow_dispatch:        # Allow manual triggering
   pull_request:
-    branches:
-      - main
+    types: [edited]
 
 permissions:
   contents: write

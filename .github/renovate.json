@@ -36,8 +36,8 @@
       ],
       "matchStringsStrategy": "combination",
       "matchStrings": [
-        "type:\\s*go:(?<currentValue>1\\.[0-9]+)(?![\\.])",
-        "type: go:(?<currentValue>1\\.[0-9]+)(?![\\.])"
+        "type:\\s*go:(?<currentValue>1\\.[0-9]+)(?:\\s|$|\")",
+        "type: go:(?<currentValue>1\\.[0-9]+)(?:\\s|$|\")"
       ],
       "depNameTemplate": "golang-docs-examples",
       "datasourceTemplate": "docker",
