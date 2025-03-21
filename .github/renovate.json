@@ -34,8 +34,10 @@
         "docs/.*\\.md$",
         "examples/.*/.lando\\.yml$"
       ],
+      "matchStringsStrategy": "combination",
       "matchStrings": [
-        "type: go:(?<currentValue>1\\.19)"
+        "type:\\s*go:(?<currentValue>1\\.[0-9]+)",
+        "type: go:(?<currentValue>1\\.[0-9]+)"
       ],
       "depNameTemplate": "golang-docs-examples",
       "datasourceTemplate": "docker",

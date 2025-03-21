@@ -41,7 +41,7 @@ jobs:
             sudo chown -R 12021:0 /tmp/renovate/
           fi
 
-      - name: Self-hosted Renovate
+      - name: 🤖 Renovate
         uses: renovatebot/github-action@v41.0.16
         with:
           token: ${{ secrets.RTFM47_COAXIUM_INJECTOR }}
