@@ -1,98 +1,95 @@
 {
-    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": [
-      "config:recommended"
-    ],
-    "enabledManagers": [
-      "custom.regex"
-    ],
-    "timezone": "UTC",
-    "prConcurrentLimit": 5,
-    "gitAuthor": "rtfm-47 <rtfm47@lando.dev>",
-    "customManagers": [
-      {
-        "customType": "regex",
-        "fileMatch": [
-          "builders/builders\\.yml$"
-        ],
-        "matchStrings": [
-          "(?<prefix>  supported:.*?)(?<currentValue>(?:    - '[0-9]+\\.[0-9]+'.*)*)(?<suffix>\\n  legacy:)"
-        ],
-        "depNameTemplate": "golang-supported-version",
-        "datasourceTemplate": "docker",
-        "packageNameTemplate": "golang",
-        "versioningTemplate": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)$",
-        "extractVersionTemplate": "^(?<version>1\\.[0-9]+)",
-        "autoReplaceStringTemplate": "{{{prefix}}}    - '{{{newVersion}}}'\n{{{currentValue}}}{{{suffix}}}"
-      },
-      {
-        "customType": "regex",
-        "fileMatch": [
-          "README\\.md$",
-          "docs/.*\\.md$",
-          "examples/.*/.lando\\.yml$"
-        ],
-        "matchStrings": [
-          "type: go:(?<currentValue>1\\.[0-9]+)"
-        ],
-        "depNameTemplate": "golang-docs-examples",
-        "datasourceTemplate": "docker",
-        "packageNameTemplate": "golang",
-        "versioningTemplate": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)$"
-      }
-    ],
-    "packageRules": [
-      {
-            "matchPackageNames": [
-              "golang-supported-version",
-              "golang-docs-examples"
-            ],
-            "matchDatasources": [
-              "docker"
-            ],
-            "groupName": "golang minor versions",
-            "schedule": [
-              "after 3:15am and before 5am on monday"
-            ],
-            "matchUpdateTypes": [
-              "minor"
-            ],
-            "automerge": true,
-            "platformAutomerge": true,
-            "labels": [
-              "dependencies",
-              "golang"
-            ]
-          },
-          {
-            "matchPackageNames": [
-              "golang-supported-version",
-              "golang-docs-examples"
-            ],
-            "matchDatasources": [
-              "docker"
-            ],
-            "enabled": false,
-            "matchUpdateTypes": [
-              "major",
-              "patch",
-              "pin",
-              "digest",
-              "rollback",
-              "bump"
-            ]
-          }
-        ],
-    "prBodyTemplate": "{{{header}}}{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}{{{footer}}}",
-    "prFooter": "These are the droids you are looking for: [Renovate](https://renovatebot.com) 🤖",
-    "updateInternalDeps": true,
-    "postUpgradeTasks": {
-      "commands": [
-        "if [[ \"${depName}\" == \"golang-supported-version\" ]]; then MAJOR_MINOR=$(echo \"${newVersion}\" | grep -oE '^[0-9]+\\.[0-9]+'); echo \"## [${MAJOR_MINOR}] - $(date +%Y-%m-%d)\\n\\n### Changed\\n\\n* Added Go ${MAJOR_MINOR} to supported versions\\n\" >> CHANGELOG.md; fi"
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "enabledManagers": [
+    "custom.regex"
+  ],
+  "timezone": "UTC",
+  "prConcurrentLimit": 5,
+  "gitAuthor": "rtfm-47 <rtfm47@lando.dev>",
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "builders/builders\\.yml$"
       ],
-        "fileFilters": [
-          "CHANGELOG.md"
-        ],
-        "executionMode": "update"
+      "matchStrings": [
+        "(?<prefix>  supported:.*?)(?<currentValue>(?:    - '[0-9]+\\.[0-9]+'.*)*)(?<suffix>\\n  legacy:)"
+      ],
+      "depNameTemplate": "golang-supported-version",
+      "datasourceTemplate": "docker",
+      "packageNameTemplate": "golang",
+      "versioningTemplate": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)$",
+      "extractVersionTemplate": "^(?<version>1\\.[0-9]+)",
+      "autoReplaceStringTemplate": "{{{prefix}}}    - '{{{newVersion}}}'\n{{{currentValue}}}{{{suffix}}}"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "README\\.md$",
+        "docs/.*\\.md$",
+        "examples/.*/.lando\\.yml$"
+      ],
+      "matchStrings": [
+        "type: go:(?<currentValue>1\\.19)"
+      ],
+      "depNameTemplate": "golang-docs-examples",
+      "datasourceTemplate": "docker",
+      "packageNameTemplate": "golang",
+      "versioningTemplate": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)$"
     }
+  ],
+  "packageRules": [
+    {
+      "matchDepNames": [
+        "golang-supported-version",
+        "golang-docs-examples"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "groupName": "golang minor versions",
+      "matchUpdateTypes": [
+        "minor"
+      ],
+      "automerge": true,
+      "platformAutomerge": true,
+      "labels": [
+        "dependencies",
+        "golang"
+      ]
+    },
+    {
+      "matchDepNames": [
+        "golang-supported-version",
+        "golang-docs-examples"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "enabled": false,
+      "matchUpdateTypes": [
+        "major",
+        "patch",
+        "pin",
+        "digest",
+        "rollback",
+        "bump"
+      ]
+    }
+  ],
+  "prBodyTemplate": "{{{header}}}{{{table}}}{{{notes}}}{{{changelogs}}}{{{controls}}}{{{footer}}}",
+  "prFooter": "These are the droids you are looking for: [Renovate](https://renovatebot.com) 🤖",
+  "updateInternalDeps": true,
+  "postUpgradeTasks": {
+    "commands": [
+      "if [[ \"${depName}\" == \"golang-supported-version\" ]]; then MAJOR_MINOR=$(echo \"${newVersion}\" | grep -oE '^[0-9]+\\.[0-9]+'); echo \"## [${MAJOR_MINOR}] - $(date +%Y-%m-%d)\\n\\n### Changed\\n\\n* Added Go ${MAJOR_MINOR} to supported versions\\n\" >> CHANGELOG.md; fi"
+    ],
+    "fileFilters": [
+      "CHANGELOG.md"
+    ],
+    "executionMode": "update"
+  }
 }
