@@ -48,7 +48,7 @@ To use a patch version, you can do something as shown below:
 ```yaml
 services:
   myservice:
-    type: go:1.13.9
+    type: go:1.24.9
 ```
 
 But make sure you use one of the available [patch tags](https://hub.docker.com/_/golang/tags/) for the underlying image we are using.
