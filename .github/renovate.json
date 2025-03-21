@@ -40,7 +40,8 @@
       "depNameTemplate": "golang-docs-examples",
       "datasourceTemplate": "docker",
       "packageNameTemplate": "golang",
-      "versioningTemplate": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)$"
+      "versioningTemplate": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)$",
+      "autoReplaceStringTemplate": "type: go:{{{newVersion}}}"
     }
   ],
   "packageRules": [
