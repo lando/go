@@ -11,20 +11,20 @@
   "gitAuthor": "rtfm-47 <rtfm47@lando.dev>",
   "customManagers": [
     {
-      "description": "Update the supported Go versions in the builders",
+      "description": "Update the supported Go versions in the builder",
       "customType": "regex",
       "fileMatch": [
-        "builders/builders\\.yml$"
+        "builders/go\\.js$"
       ],
       "matchStrings": [
-        "(?<prefix>  supported:.*?)(?<currentValue>(?:    - '[0-9]+\\.[0-9]+'.*)*)(?<suffix>\\n  legacy:)"
+        "(?<prefix>supported:\\s*\\[\\s*)(?<currentValue>(?:\\s*'\\d+\\.\\d+',?)+)(?<suffix>\\s*\\])"
       ],
       "depNameTemplate": "golang-supported-version",
       "datasourceTemplate": "docker",
       "packageNameTemplate": "golang",
       "versioningTemplate": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)$",
       "extractVersionTemplate": "^(?<version>1\\.[0-9]+)",
-      "autoReplaceStringTemplate": "{{{prefix}}}    - '{{{newVersion}}}'\n{{{currentValue}}}{{{suffix}}}"
+      "autoReplaceStringTemplate": "{{{prefix}}}'{{{newVersion}}}',{{{currentValue}}}{{{suffix}}}"
     },
     {
       "description": "Update the latest supported Go version in the docs and examples",

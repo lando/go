@@ -2,13 +2,30 @@
 
 // Modules
 const _ = require('lodash');
-const yaml = require('js-yaml');
-const fs = require('fs');
-const path = require('path');
 
-// Load config
-const configPath = path.join(__dirname, 'builders.yml');
-const {go: config} = yaml.load(fs.readFileSync(configPath, 'utf8'));
+// Define config directly
+const config = {
+  version: '1.17', // Default version
+  supported: [
+    '1.19',
+    '1.18',
+    '1.17',
+    '1.16',
+    '1.15',
+    '1.14',
+    '1.13',
+  ],
+  patchesSupported: true,
+  legacy: [
+    '1.12',
+    '1.11',
+    '1.10',
+    '1.9',
+    '1.8',
+  ],
+  command: 'tail -f /dev/null',
+  ssl: false,
+};
 
 // Builder
 module.exports = {
