@@ -88,7 +88,7 @@ jobs:
             // Update default version to latest
             content = content.replace(
               /version: '[^']*/,
-              "version: '$LATEST_VERSION'"
+              \"version: '$LATEST_VERSION'\"
             );
 
             // Parse current versions
@@ -131,18 +131,18 @@ jobs:
             const newLegacy = allVersions.filter(v => !newSupported.includes(v));
 
             // Update supported versions array
-            const supportedArray = newSupported.map(v => \"    '\" + v + \"',\").join('\n');
+            const supportedArray = newSupported.map(v => '    \\'' + v + '\\',').join('\\n');
             content = content.replace(
-              /supported: \[\s*[\s\S]*?\s*\]/,
-              \"supported: [\n\" + supportedArray + \"\n  ]\"
+              /supported: \\[\\s*[\\s\\S]*?\\s*\\]/,
+              'supported: [\\n' + supportedArray + '\\n  ]'
             );
 
             // Update legacy versions array
             if (newLegacy.length > 0) {
-              const legacyArray = newLegacy.map(v => \"    '\" + v + \"',\").join('\n');
+              const legacyArray = newLegacy.map(v => '    \\'' + v + '\\',').join('\\n');
               content = content.replace(
-                /legacy: \[\s*[\s\S]*?\s*\]/,
-                \"legacy: [\n\" + legacyArray + \"\n  ]\"
+                /legacy: \\[\\s*[\\s\\S]*?\\s*\\]/,
+                'legacy: [\\n' + legacyArray + '\\n  ]'
               );
             }
 
