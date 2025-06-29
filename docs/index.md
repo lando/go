@@ -13,29 +13,35 @@ You can easily add it to your Lando app by adding an entry to the [services](htt
 ```yaml
 services:
   myservice:
-    type: go:1.19
+    type: go:1.24
 ```
 
 ## Supported versions
 
-*   [1.19](https://hub.docker.com/_/golang/)
-*   [1.18](https://hub.docker.com/_/golang/)
-*   [1.17](https://hub.docker.com/_/golang/)
-*   **[1.16](https://hub.docker.com/_/golang/)** **(default)**
-*   [1.15](https://hub.docker.com/_/golang/)
-*   [1.14](https://hub.docker.com/_/golang/)
-*   [1.13](https://hub.docker.com/_/golang/)
-*   [custom](https://docs.lando.dev/services/lando-3.html#overrides)
+- **[1.24](https://hub.docker.com/_/golang/)** **(default)**
+- [1.23](https://hub.docker.com/_/golang/)
+- [1.22](https://hub.docker.com/_/golang/)
+- [1.21](https://hub.docker.com/_/golang/)
+- [1.20](https://hub.docker.com/_/golang/)
+- [custom](https://docs.lando.dev/services/lando-3.html#overrides)
+
 
 ## Legacy versions
 
 You can still run these versions with Lando but for all intents and purposes they should be considered deprecated (e.g. YMMV and do not expect a ton of support if you have an issue).
 
-*   [1.12](https://hub.docker.com/_/golang/)
-*   [1.11](https://hub.docker.com/_/golang/)
-*   [1.10](https://hub.docker.com/_/golang/)
-*   [1.9](https://hub.docker.com/_/golang/)
-*   [1.8](https://hub.docker.com/_/golang/)
+- [1.19](https://hub.docker.com/_/golang/)
+- [1.18](https://hub.docker.com/_/golang/)
+- [1.17](https://hub.docker.com/_/golang/)
+- [1.16](https://hub.docker.com/_/golang/)
+- [1.15](https://hub.docker.com/_/golang/)
+- [1.14](https://hub.docker.com/_/golang/)
+- [1.13](https://hub.docker.com/_/golang/)
+- [1.12](https://hub.docker.com/_/golang/)
+- [1.11](https://hub.docker.com/_/golang/)
+- [1.10](https://hub.docker.com/_/golang/)
+- [1.9](https://hub.docker.com/_/golang/)
+- [1.8](https://hub.docker.com/_/golang/)
 
 ## Patch versions
 

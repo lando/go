@@ -1,6 +1,8 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
-* Added hybrid automation with GitHub Actions for major/minor updates and Renovate for patch updates
+* Added Go v1.20-v1.24 support.
+* Set default Go version to v1.24.
+* Added GitHub Actions automation for Go version updates
 
 ## v1.2.3 - [December 6, 2024](https://github.com/lando/go/releases/tag/v1.2.3)
 
