@@ -8,12 +8,16 @@ const config = {
   version: '1.24', // Default version
   supported: [
     '1.24',
-    '1.19',
-    '1.18',
-    '1.17',
+    '1.23',
+    '1.22',
+    '1.21',
+    '1.20',
   ],
   patchesSupported: true,
   legacy: [
+    '1.19',
+    '1.18',
+    '1.17',
     '1.16',
     '1.15',
     '1.14',

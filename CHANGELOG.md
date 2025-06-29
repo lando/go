@@ -1,6 +1,6 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
-* Added Go v1.24 support.
+* Added Go v1.20-v1.24 support.
 * Set default Go version to v1.24.
 * Added GitHub Actions automation for Go version updates
 

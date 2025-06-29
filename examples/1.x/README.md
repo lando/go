@@ -22,18 +22,18 @@ Verification commands
 Run the following commands to validate things are rolling as they should.
 
 ```bash
-# Should use 1.19 as specified in landofile
-lando ssh -s defaults -c "go version | grep go1.19"
+# Should use go:1.24 as specified in landofile
+lando exec defaults -- go version | grep go1.24
 
 # Should run only on port 80 by default
-lando ssh -s defaults -c "curl http://localhost" | grep HEART
-lando ssh -s defaults -c "curl https://localhost" || echo $? | grep 7
+lando exec defaults -- curl http://localhost | grep HEART
+lando exec defaults -- curl https://localhost || echo $? | grep 7
 
-# Should use the version if specified by user
-lando ssh -s patch -c "go version | grep go1.17.3"
+# Should use the patch version if specified by user
+lando exec patch -- go version | grep go1.23.1
 
 # Should not serve port 80 for cli
-lando ssh -s cli -c "curl http://localhost" || echo $? | grep 7
+lando exec cli -- curl http://localhost || echo $? | grep 7
 ```
 
 Destroy tests
