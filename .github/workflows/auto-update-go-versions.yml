@@ -175,29 +175,32 @@ jobs:
             const latestVersion = '$LATEST_VERSION';
             const currentDefault = '$CURRENT_DEFAULT';
 
-            // Create changelog entry
-            const changelogEntry = '* Updated Go to v' + latestVersion + ' (was v' + currentDefault + ')';
+            // Create changelog entries
+            const supportEntry = '* Added Go v' + latestVersion + ' support.';
+            const defaultEntry = '* Set default Go version to v' + latestVersion + '.';
 
-            // Check if this entry already exists
-            if (content.includes(changelogEntry)) {
-              console.log('Changelog entry already exists');
+            // Check if these entries already exist
+            if (content.includes(supportEntry) && content.includes(defaultEntry)) {
+              console.log('Changelog entries already exist');
             } else {
               // Find the unreleased header and insert after the blank line
-              const unreleasedHeaderRegex = /(## {{ UNRELEASED_VERSION }}[^\\n]*\\n\\n)/;
+              const unreleasedHeaderRegex = /(## {{ UNRELEASED_VERSION }}[^\\\\n]*\\\\n\\\\n)/;
               const match = content.match(unreleasedHeaderRegex);
 
               if (match) {
                 const headerWithBlankLine = match[1];
                 const restOfContent = content.substring(match.index + headerWithBlankLine.length);
                 
-                // Insert the new entry right after the header and blank line
-                const updatedContent = headerWithBlankLine + changelogEntry + '\\n' + restOfContent;
+                // Insert both entries right after the header and blank line
+                const newEntries = supportEntry + '\\\\n' + defaultEntry + '\\\\n';
+                const updatedContent = headerWithBlankLine + newEntries + restOfContent;
                 
                 fs.writeFileSync(path, updatedContent);
-                console.log('Added changelog entry:', changelogEntry);
+                console.log('Added changelog entries:', supportEntry, defaultEntry);
               } else {
                 console.log('Could not find unreleased header in CHANGELOG.md');
               }
+            }
             }
           "
           echo "Updated CHANGELOG.md"
