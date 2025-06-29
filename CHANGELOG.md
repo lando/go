@@ -1,7 +1,6 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
-* Moved default builder config into `builders.yml` to allow for more flexible versioning.
-* Added Renovate bot to handle Go version updates.
+* Added hybrid automation with GitHub Actions for major/minor updates and Renovate for patch updates
 
 ## v1.2.3 - [December 6, 2024](https://github.com/lando/go/releases/tag/v1.2.3)
 

@@ -1,0 +1,169 @@
+name: Auto-update Go versions
+
+on:
+  schedule:
+    # Run weekly on Mondays at 6 AM UTC
+    - cron: '0 6 * * 1'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  check-and-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Check for new Go versions
+        id: check-versions
+        run: |
+          # Get latest Go versions from Docker Hub
+          echo "Fetching Go versions from Docker Hub..."
+          
+          # Get major.minor versions (1.20, 1.21, etc.)
+          MAJOR_MINOR_VERSIONS=$(curl -s "https://registry.hub.docker.com/v2/repositories/library/golang/tags/?page_size=100" | \
+            jq -r '.results[].name' | \
+            grep -E '^1\.[0-9]+$' | \
+            sort -V | \
+            tail -10)
+          
+          echo "Available major.minor versions:"
+          echo "$MAJOR_MINOR_VERSIONS"
+          
+          # Get the latest major.minor version
+          LATEST_VERSION=$(echo "$MAJOR_MINOR_VERSIONS" | tail -1)
+          echo "latest_version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+          
+          # Get current default version from plugin
+          CURRENT_VERSION=$(grep -o "version: '[^']*'" builders/go.js | cut -d"'" -f2)
+          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          
+          # Get current supported versions
+          CURRENT_SUPPORTED=$(grep -A 10 "supported:" builders/go.js | grep -o "'[0-9.]*'" | tr -d "'" | tr '\n' ',' | sed 's/,$//')
+          echo "current_supported=$CURRENT_SUPPORTED" >> $GITHUB_OUTPUT
+          
+          # Calculate new supported versions (latest 5 major.minor versions)
+          NEW_SUPPORTED=$(echo "$MAJOR_MINOR_VERSIONS" | tail -5 | tac | tr '\n' ',' | sed 's/,$//')
+          echo "new_supported=$NEW_SUPPORTED" >> $GITHUB_OUTPUT
+          
+          # Check if update is needed
+          if [ "$LATEST_VERSION" != "$CURRENT_VERSION" ] || [ "$NEW_SUPPORTED" != "$CURRENT_SUPPORTED" ]; then
+            echo "needs_update=true" >> $GITHUB_OUTPUT
+            echo "Update needed:"
+            echo "  Current default: $CURRENT_VERSION -> $LATEST_VERSION"
+            echo "  Current supported: $CURRENT_SUPPORTED"
+            echo "  New supported: $NEW_SUPPORTED"
+          else
+            echo "needs_update=false" >> $GITHUB_OUTPUT
+            echo "No update needed. Current version $CURRENT_VERSION is latest."
+          fi
+
+      - name: Update plugin files
+        if: steps.check-versions.outputs.needs_update == 'true'
+        run: |
+          LATEST_VERSION="${{ steps.check-versions.outputs.latest_version }}"
+          CURRENT_VERSION="${{ steps.check-versions.outputs.current_version }}"
+          NEW_SUPPORTED="${{ steps.check-versions.outputs.new_supported }}"
+          
+          echo "Updating to version: $LATEST_VERSION"
+          echo "New supported versions: $NEW_SUPPORTED"
+          
+          # Update builders/go.js
+          node -e "
+            const fs = require('fs');
+            const path = 'builders/go.js';
+            let content = fs.readFileSync(path, 'utf8');
+            
+            // Update default version
+            content = content.replace(
+              /version: '[^']*'/,
+              \"version: '$LATEST_VERSION'\"
+            );
+            
+            // Update supported versions array
+            const supportedArray = '$NEW_SUPPORTED'.split(',').map(v => \"    '\" + v + \"',\").join('\n');
+            content = content.replace(
+              /supported: \[\s*[\s\S]*?\s*\]/,
+              \"supported: [\n\" + supportedArray + \"\n  ]\"
+            );
+            
+            fs.writeFileSync(path, content);
+            console.log('Updated builders/go.js');
+          "
+          
+          # Update examples - only replace the current default version
+          find examples -name "*.yml" -exec sed -i "s/go:$CURRENT_VERSION/go:$LATEST_VERSION/g" {} \;
+          echo "Updated examples"
+          
+          # Update README.md - only replace the current default version
+          sed -i "s/go:$CURRENT_VERSION/go:$LATEST_VERSION/g" README.md
+          echo "Updated README.md"
+          
+          # Update docs - only replace the current default version
+          find docs -name "*.md" -exec sed -i "s/go:$CURRENT_VERSION/go:$LATEST_VERSION/g" {} \;
+          echo "Updated docs"
+          
+          # Update supported versions list in docs/index.md
+          node -e "
+            const fs = require('fs');
+            const path = 'docs/index.md';
+            let content = fs.readFileSync(path, 'utf8');
+            
+            const versions = '$NEW_SUPPORTED'.split(',');
+            const versionList = versions.map((v, i) => {
+              const isDefault = i === 0 ? ' **(default)**' : '';
+              return \"- \" + (i === 0 ? '**' : '') + \"[\" + v + \"](https://hub.docker.com/_/golang/)\" + (i === 0 ? '**' : '') + isDefault;
+            }).join('\n');
+            
+            // Replace the supported versions section if it exists
+            const supportedSectionRegex = /## Supported versions[\s\S]*?(?=\n## |\n# |$)/;
+            if (content.match(supportedSectionRegex)) {
+              content = content.replace(
+                supportedSectionRegex,
+                '## Supported versions\n\n' + versionList + '\n- [custom](https://docs.lando.dev/services/lando-3.html#overrides)\n\n'
+              );
+            }
+            
+            fs.writeFileSync(path, content);
+            console.log('Updated supported versions in docs/index.md');
+          "
+
+      - name: Create Pull Request
+        if: steps.check-versions.outputs.needs_update == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: |
+            Update Go to v${{ steps.check-versions.outputs.latest_version }}
+            
+            - Updated default version from ${{ steps.check-versions.outputs.current_version }} to ${{ steps.check-versions.outputs.latest_version }}
+            - Updated supported versions to latest 5 releases
+            - Updated all examples and documentation
+          title: "Update Go to v${{ steps.check-versions.outputs.latest_version }}"
+          body: |
+            ## Summary
+            - Updates Go plugin to use the latest version v${{ steps.check-versions.outputs.latest_version }}
+            - Updates supported versions list to include the 5 most recent releases
+            - Updates all examples and documentation to reflect the new default version
+            
+            ## Changes
+            - **Plugin**: Updated default version and supported versions in `builders/go.js`
+            - **Examples**: Updated version references in example `.lando.yml` files
+            - **Documentation**: Updated version references in README.md and docs/
+            
+            ## Test plan
+            - [ ] Verify plugin loads with new version
+            - [ ] Test examples work with new default version
+            - [ ] Test examples work with explicit versions
+            - [ ] Verify documentation renders correctly
+            
+            ---
+            *This PR was automatically generated by GitHub Actions*
+          branch: auto-update-go-v${{ steps.check-versions.outputs.latest_version }}
+          delete-branch: true
