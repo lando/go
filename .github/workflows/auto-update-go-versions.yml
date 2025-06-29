@@ -166,6 +166,43 @@ jobs:
           find docs -name "*.md" -exec sed -i "s/go:$CURRENT_HIGHEST\([^0-9.]\|$\)/go:$LATEST_VERSION\1/g" {} \;
           echo "Updated docs"
           
+          # Update CHANGELOG.md with new entry
+          node -e "
+            const fs = require('fs');
+            const path = 'CHANGELOG.md';
+            let content = fs.readFileSync(path, 'utf8');
+            
+            const latestVersion = '$LATEST_VERSION';
+            const currentDefault = '$CURRENT_DEFAULT';
+            
+            // Create changelog entry
+            const changelogEntry = '* Updated Go to v' + latestVersion + ' (was v' + currentDefault + ')';
+            
+            // Find the unreleased section and add the entry
+            const unreleasedRegex = /(## {{ UNRELEASED_VERSION }}[\\s\\S]*?)(\\n\\n## |\\n## |$)/;
+            const match = content.match(unreleasedRegex);
+            
+            if (match) {
+              const beforeSection = match[1];
+              const afterSection = match[2];
+              
+              // Check if this entry already exists
+              if (!beforeSection.includes(changelogEntry)) {
+                // Add the new entry after existing entries
+                const updatedSection = beforeSection.trim() + '\\n' + changelogEntry + '\\n';
+                content = content.replace(unreleasedRegex, updatedSection + afterSection);
+                
+                fs.writeFileSync(path, content);
+                console.log('Added changelog entry:', changelogEntry);
+              } else {
+                console.log('Changelog entry already exists');
+              }
+            } else {
+              console.log('Could not find unreleased section in CHANGELOG.md');
+            }
+          "
+          echo "Updated CHANGELOG.md"
+          
           # Update supported versions list in docs/index.md
           node -e "
             const fs = require('fs');
@@ -226,6 +263,7 @@ jobs:
             - **Plugin**: Added additional versions up to 4 total, moved older versions to legacy
             - **Examples**: Updated `go:${{ steps.check-versions.outputs.current_highest }}` → `go:${{ steps.check-versions.outputs.latest_version }}` (preserves specific version examples)
             - **Documentation**: Updated version references in README.md and docs/
+            - **Changelog**: Added entry documenting the version update
             
             ## Test plan
             - [ ] Verify plugin loads with new version

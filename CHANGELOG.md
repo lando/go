@@ -1,7 +1,6 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
 * Added GitHub Actions automation for Go version updates
-* Removed Renovate configuration in favor of comprehensive GitHub Actions workflow
 
 ## v1.2.3 - [December 6, 2024](https://github.com/lando/go/releases/tag/v1.2.3)
 
