@@ -184,7 +184,7 @@ jobs:
               console.log('Changelog entries already exist');
             } else {
               // Find the unreleased header and insert after the blank line
-              const unreleasedHeaderRegex = /(## {{ UNRELEASED_VERSION }}[^\\\\n]*\\\\n\\\\n)/;
+              const unreleasedHeaderRegex = /(## {{ UNRELEASED_VERSION }}[^\\n]*\\n\\n)/;
               const match = content.match(unreleasedHeaderRegex);
 
               if (match) {
@@ -192,7 +192,7 @@ jobs:
                 const restOfContent = content.substring(match.index + headerWithBlankLine.length);
                 
                 // Insert both entries right after the header and blank line
-                const newEntries = supportEntry + '\\\\n' + defaultEntry + '\\\\n';
+                const newEntries = supportEntry + '\\n' + defaultEntry + '\\n';
                 const updatedContent = headerWithBlankLine + newEntries + restOfContent;
                 
                 fs.writeFileSync(path, updatedContent);
