@@ -13,19 +13,17 @@ You can easily add it to your Lando app by adding an entry to the [services](htt
 ```yaml
 services:
   myservice:
-    type: go:1.19
+    type: go:1.24
 ```
 
 ## Supported versions
 
-*   [1.19](https://hub.docker.com/_/golang/)
-*   [1.18](https://hub.docker.com/_/golang/)
-*   [1.17](https://hub.docker.com/_/golang/)
-*   **[1.16](https://hub.docker.com/_/golang/)** **(default)**
-*   [1.15](https://hub.docker.com/_/golang/)
-*   [1.14](https://hub.docker.com/_/golang/)
-*   [1.13](https://hub.docker.com/_/golang/)
-*   [custom](https://docs.lando.dev/services/lando-3.html#overrides)
+- **[1.24](https://hub.docker.com/_/golang/)** **(default)**
+- [1.19](https://hub.docker.com/_/golang/)
+- [1.18](https://hub.docker.com/_/golang/)
+- [1.17](https://hub.docker.com/_/golang/)
+- [custom](https://docs.lando.dev/services/lando-3.html#overrides)
+
 
 ## Legacy versions
 
