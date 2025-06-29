@@ -87,7 +87,7 @@ jobs:
 
             // Update default version to latest
             content = content.replace(
-              /version: '[^']*/,
+              /version: '[^']*'/,
               \"version: '$LATEST_VERSION'\"
             );
 
