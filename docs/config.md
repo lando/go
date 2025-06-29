@@ -12,7 +12,7 @@ Also note that options in addition to the [build steps](https://docs.lando.dev/s
 ```yaml
 services:
   myservice:
-    type: go:1.13
+    type: go:1.19
     ssl: false
     command: tail -f /dev/null
 ```
@@ -50,14 +50,14 @@ By default a service will not do any tooling routing for you but you can add hel
 
 ```yaml
 tooling:
-  donet:
+  go:
     service: myservice
 ```
 
 You can then invoke them on the command line.
 
 ```bash
-lando dotnet
+lando go
 ```
 
 Lando tooling is actually pretty powerful so definitely check out [the rest](https://docs.lando.dev/landofile/tooling.html) of its cool features.
