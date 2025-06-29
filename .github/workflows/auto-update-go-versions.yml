@@ -188,9 +188,9 @@ jobs:
 
               // Check if this entry already exists
               if (!beforeSection.includes(changelogEntry)) {
-                // Add the new entry above existing entries
-                const updatedSection = changelogEntry + '\\n' + beforeSection.trim();
-                content = content.replace(unreleasedRegex, updatedSection + afterSection);
+                // Add the new entry inside the unreleased section, above existing entries
+                const updatedSection = beforeSection + '\\n\\n' + changelogEntry + '\\n' + afterSection.trim();
+                content = content.replace(unreleasedRegex, updatedSection);
 
                 fs.writeFileSync(path, content);
                 console.log('Added changelog entry:', changelogEntry);
