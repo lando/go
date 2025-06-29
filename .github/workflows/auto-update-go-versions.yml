@@ -88,7 +88,7 @@ jobs:
             // Update default version to latest
             content = content.replace(
               /version: '[^']*/,
-              \"version: '$LATEST_VERSION'\"
+              "version: '$LATEST_VERSION'"
             );
 
             // Parse current versions
@@ -190,11 +190,11 @@ jobs:
               if (match) {
                 const headerWithBlankLine = match[1];
                 const restOfContent = content.substring(match.index + headerWithBlankLine.length);
-                
+
                 // Insert both entries right after the header and blank line
                 const newEntries = supportEntry + '\\n' + defaultEntry + '\\n';
                 const updatedContent = headerWithBlankLine + newEntries + restOfContent;
-                
+
                 fs.writeFileSync(path, updatedContent);
                 console.log('Added changelog entries:', supportEntry, defaultEntry);
               } else {
