@@ -27,54 +27,60 @@ jobs:
           echo "Fetching Go versions from Docker Hub..."
           
           # Get major.minor versions (1.20, 1.21, etc.)
-          MAJOR_MINOR_VERSIONS=$(curl -s "https://registry.hub.docker.com/v2/repositories/library/golang/tags/?page_size=100" | \
+          AVAILABLE_VERSIONS=$(curl -s "https://registry.hub.docker.com/v2/repositories/library/golang/tags/?page_size=100" | \
             jq -r '.results[].name' | \
             grep -E '^1\.[0-9]+$' | \
-            sort -V | \
-            tail -10)
+            sort -V)
           
           echo "Available major.minor versions:"
-          echo "$MAJOR_MINOR_VERSIONS"
+          echo "$AVAILABLE_VERSIONS"
           
           # Get the latest major.minor version
-          LATEST_VERSION=$(echo "$MAJOR_MINOR_VERSIONS" | tail -1)
+          LATEST_VERSION=$(echo "$AVAILABLE_VERSIONS" | tail -1)
           echo "latest_version=$LATEST_VERSION" >> $GITHUB_OUTPUT
           
           # Get current default version from plugin
-          CURRENT_VERSION=$(grep -o "version: '[^']*'" builders/go.js | cut -d"'" -f2)
-          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          CURRENT_DEFAULT=$(grep -o "version: '[^']*'" builders/go.js | cut -d"'" -f2)
+          echo "current_default=$CURRENT_DEFAULT" >> $GITHUB_OUTPUT
           
-          # Get current supported versions
-          CURRENT_SUPPORTED=$(grep -A 10 "supported:" builders/go.js | grep -o "'[0-9.]*'" | tr -d "'" | tr '\n' ',' | sed 's/,$//')
+          # Get current supported and legacy versions
+          CURRENT_SUPPORTED=$(grep -A 20 "supported:" builders/go.js | grep -o "'[0-9.]*'" | tr -d "'" | tr '\n' ',' | sed 's/,$//')
+          CURRENT_LEGACY=$(grep -A 20 "legacy:" builders/go.js | grep -o "'[0-9.]*'" | tr -d "'" | tr '\n' ',' | sed 's/,$//')
           echo "current_supported=$CURRENT_SUPPORTED" >> $GITHUB_OUTPUT
+          echo "current_legacy=$CURRENT_LEGACY" >> $GITHUB_OUTPUT
           
-          # Calculate new supported versions (latest 5 major.minor versions)
-          NEW_SUPPORTED=$(echo "$MAJOR_MINOR_VERSIONS" | tail -5 | tac | tr '\n' ',' | sed 's/,$//')
-          echo "new_supported=$NEW_SUPPORTED" >> $GITHUB_OUTPUT
+          # Check Go EOL status (Go supports last 2 major versions)
+          LATEST_MAJOR=$(echo "$LATEST_VERSION" | cut -d. -f2)
+          EOL_THRESHOLD=$((LATEST_MAJOR - 2))
+          echo "eol_threshold=1.$EOL_THRESHOLD" >> $GITHUB_OUTPUT
           
-          # Check if update is needed
-          if [ "$LATEST_VERSION" != "$CURRENT_VERSION" ] || [ "$NEW_SUPPORTED" != "$CURRENT_SUPPORTED" ]; then
+          # Check if update is needed (new version available)
+          if [ "$LATEST_VERSION" != "$CURRENT_DEFAULT" ]; then
             echo "needs_update=true" >> $GITHUB_OUTPUT
             echo "Update needed:"
-            echo "  Current default: $CURRENT_VERSION -> $LATEST_VERSION"
-            echo "  Current supported: $CURRENT_SUPPORTED"
-            echo "  New supported: $NEW_SUPPORTED"
+            echo "  Current default: $CURRENT_DEFAULT -> $LATEST_VERSION"
+            echo "  EOL threshold: 1.$EOL_THRESHOLD"
           else
             echo "needs_update=false" >> $GITHUB_OUTPUT
-            echo "No update needed. Current version $CURRENT_VERSION is latest."
+            echo "No update needed. Current version $CURRENT_DEFAULT is latest."
           fi
 
       - name: Update plugin files
         if: steps.check-versions.outputs.needs_update == 'true'
         run: |
           LATEST_VERSION="${{ steps.check-versions.outputs.latest_version }}"
-          CURRENT_VERSION="${{ steps.check-versions.outputs.current_version }}"
-          NEW_SUPPORTED="${{ steps.check-versions.outputs.new_supported }}"
+          CURRENT_DEFAULT="${{ steps.check-versions.outputs.current_default }}"
+          CURRENT_SUPPORTED="${{ steps.check-versions.outputs.current_supported }}"
+          CURRENT_LEGACY="${{ steps.check-versions.outputs.current_legacy }}"
+          EOL_THRESHOLD="${{ steps.check-versions.outputs.eol_threshold }}"
           
           echo "Updating to version: $LATEST_VERSION"
-          echo "New supported versions: $NEW_SUPPORTED"
+          echo "Current default: $CURRENT_DEFAULT"
+          echo "Current supported: $CURRENT_SUPPORTED"
+          echo "Current legacy: $CURRENT_LEGACY"
+          echo "EOL threshold: $EOL_THRESHOLD"
           
-          # Update builders/go.js
+          # Update builders/go.js with smart version management
           node -e "
             const fs = require('fs');
             const path = 'builders/go.js';
@@ -86,27 +92,80 @@ jobs:
               \"version: '$LATEST_VERSION'\"
             );
             
+            // Parse current versions
+            const currentSupported = '$CURRENT_SUPPORTED'.split(',').filter(v => v);
+            const currentLegacy = '$CURRENT_LEGACY'.split(',').filter(v => v);
+            const eolThreshold = '$EOL_THRESHOLD';
+            const latestVersion = '$LATEST_VERSION';
+            
+            // Add latest version to supported if not already there
+            const newSupported = [...currentSupported];
+            if (!newSupported.includes(latestVersion)) {
+              newSupported.unshift(latestVersion);
+            }
+            
+            // Move EOL versions from supported to legacy
+            const stillSupported = [];
+            const newLegacy = [...currentLegacy];
+            
+            newSupported.forEach(version => {
+              const versionNum = parseFloat(version.replace('1.', ''));
+              const thresholdNum = parseFloat(eolThreshold.replace('1.', ''));
+              
+              if (versionNum >= thresholdNum) {
+                stillSupported.push(version);
+              } else {
+                if (!newLegacy.includes(version)) {
+                  newLegacy.push(version);
+                }
+              }
+            });
+            
+            // Sort versions (newest first for supported, oldest first for legacy)
+            stillSupported.sort((a, b) => {
+              const aNum = parseFloat(a.replace('1.', ''));
+              const bNum = parseFloat(b.replace('1.', ''));
+              return bNum - aNum;
+            });
+            
+            newLegacy.sort((a, b) => {
+              const aNum = parseFloat(a.replace('1.', ''));
+              const bNum = parseFloat(b.replace('1.', ''));
+              return aNum - bNum;
+            });
+            
             // Update supported versions array
-            const supportedArray = '$NEW_SUPPORTED'.split(',').map(v => \"    '\" + v + \"',\").join('\n');
+            const supportedArray = stillSupported.map(v => \"    '\" + v + \"',\").join('\n');
             content = content.replace(
               /supported: \[\s*[\s\S]*?\s*\]/,
               \"supported: [\n\" + supportedArray + \"\n  ]\"
             );
             
+            // Update legacy versions array if there are any
+            if (newLegacy.length > 0) {
+              const legacyArray = newLegacy.map(v => \"    '\" + v + \"',\").join('\n');
+              content = content.replace(
+                /legacy: \[\s*[\s\S]*?\s*\]/,
+                \"legacy: [\n\" + legacyArray + \"\n  ]\"
+              );
+            }
+            
             fs.writeFileSync(path, content);
             console.log('Updated builders/go.js');
+            console.log('New supported versions:', stillSupported.join(', '));
+            console.log('New legacy versions:', newLegacy.join(', '));
           "
           
-          # Update examples - only replace the current default version
-          find examples -name "*.yml" -exec sed -i "s/go:$CURRENT_VERSION/go:$LATEST_VERSION/g" {} \;
-          echo "Updated examples"
+          # Update examples - only replace the current default version (go:X.Y format)
+          find examples -name "*.yml" -exec sed -i "s/go:$CURRENT_DEFAULT\([^0-9]\|$\)/go:$LATEST_VERSION\1/g" {} \;
+          echo "Updated examples (replaced go:$CURRENT_DEFAULT with go:$LATEST_VERSION)"
           
           # Update README.md - only replace the current default version
-          sed -i "s/go:$CURRENT_VERSION/go:$LATEST_VERSION/g" README.md
+          sed -i "s/go:$CURRENT_DEFAULT\([^0-9]\|$\)/go:$LATEST_VERSION\1/g" README.md
           echo "Updated README.md"
           
           # Update docs - only replace the current default version
-          find docs -name "*.md" -exec sed -i "s/go:$CURRENT_VERSION/go:$LATEST_VERSION/g" {} \;
+          find docs -name "*.md" -exec sed -i "s/go:$CURRENT_DEFAULT\([^0-9]\|$\)/go:$LATEST_VERSION\1/g" {} \;
           echo "Updated docs"
           
           # Update supported versions list in docs/index.md
@@ -115,23 +174,32 @@ jobs:
             const path = 'docs/index.md';
             let content = fs.readFileSync(path, 'utf8');
             
-            const versions = '$NEW_SUPPORTED'.split(',');
-            const versionList = versions.map((v, i) => {
-              const isDefault = i === 0 ? ' **(default)**' : '';
-              return \"- \" + (i === 0 ? '**' : '') + \"[\" + v + \"](https://hub.docker.com/_/golang/)\" + (i === 0 ? '**' : '') + isDefault;
-            }).join('\n');
-            
-            // Replace the supported versions section if it exists
-            const supportedSectionRegex = /## Supported versions[\s\S]*?(?=\n## |\n# |$)/;
-            if (content.match(supportedSectionRegex)) {
-              content = content.replace(
-                supportedSectionRegex,
-                '## Supported versions\n\n' + versionList + '\n- [custom](https://docs.lando.dev/services/lando-3.html#overrides)\n\n'
-              );
+            // Get the updated supported versions from the plugin file
+            const pluginContent = fs.readFileSync('builders/go.js', 'utf8');
+            const supportedMatch = pluginContent.match(/supported: \[\s*([\s\S]*?)\s*\]/);
+            if (supportedMatch) {
+              const supportedVersions = supportedMatch[1]
+                .split(',')
+                .map(line => line.trim().replace(/[',]/g, ''))
+                .filter(v => v);
+              
+              const versionList = supportedVersions.map((v, i) => {
+                const isDefault = i === 0 ? ' **(default)**' : '';
+                return \"- \" + (i === 0 ? '**' : '') + \"[\" + v + \"](https://hub.docker.com/_/golang/)\" + (i === 0 ? '**' : '') + isDefault;
+              }).join('\n');
+              
+              // Replace the supported versions section if it exists
+              const supportedSectionRegex = /## Supported versions[\s\S]*?(?=\n## |\n# |$)/;
+              if (content.match(supportedSectionRegex)) {
+                content = content.replace(
+                  supportedSectionRegex,
+                  '## Supported versions\n\n' + versionList + '\n- [custom](https://docs.lando.dev/services/lando-3.html#overrides)\n\n'
+                );
+              }
+              
+              fs.writeFileSync(path, content);
+              console.log('Updated supported versions in docs/index.md');
             }
-            
-            fs.writeFileSync(path, content);
-            console.log('Updated supported versions in docs/index.md');
           "
 
       - name: Create Pull Request
@@ -142,26 +210,29 @@ jobs:
           commit-message: |
             Update Go to v${{ steps.check-versions.outputs.latest_version }}
             
-            - Updated default version from ${{ steps.check-versions.outputs.current_version }} to ${{ steps.check-versions.outputs.latest_version }}
-            - Updated supported versions to latest 5 releases
-            - Updated all examples and documentation
+            - Updated default version from ${{ steps.check-versions.outputs.current_default }} to ${{ steps.check-versions.outputs.latest_version }}
+            - Added new version to supported list, moved EOL versions to legacy
+            - Updated examples and documentation (only current default version)
           title: "Update Go to v${{ steps.check-versions.outputs.latest_version }}"
           body: |
             ## Summary
             - Updates Go plugin to use the latest version v${{ steps.check-versions.outputs.latest_version }}
-            - Updates supported versions list to include the 5 most recent releases
-            - Updates all examples and documentation to reflect the new default version
+            - Preserves existing supported versions, adds new version, moves EOL versions to legacy
+            - Updates examples and documentation (only replaces current default version ${{ steps.check-versions.outputs.current_default }})
             
             ## Changes
-            - **Plugin**: Updated default version and supported versions in `builders/go.js`
-            - **Examples**: Updated version references in example `.lando.yml` files
+            - **Plugin**: Updated default version in `builders/go.js`
+            - **Plugin**: Added v${{ steps.check-versions.outputs.latest_version }} to supported versions
+            - **Plugin**: Moved EOL versions (< ${{ steps.check-versions.outputs.eol_threshold }}) to legacy
+            - **Examples**: Updated `go:${{ steps.check-versions.outputs.current_default }}` → `go:${{ steps.check-versions.outputs.latest_version }}` (preserves other versions)
             - **Documentation**: Updated version references in README.md and docs/
             
             ## Test plan
             - [ ] Verify plugin loads with new version
             - [ ] Test examples work with new default version
-            - [ ] Test examples work with explicit versions
+            - [ ] Test examples work with explicit versions (should be unchanged)
             - [ ] Verify documentation renders correctly
+            - [ ] Confirm EOL versions moved to legacy section
             
             ---
             *This PR was automatically generated by GitHub Actions*
