@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+## v1.3.0 - [June 29, 2025](https://github.com/lando/go/releases/tag/v1.3.0)
+
 * Added Go v1.20-v1.24 support
 * Updated default Go version from v1.17 to v1.24
 * Added GitHub Actions automation for Go version updates
