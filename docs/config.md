@@ -12,7 +12,7 @@ Also note that options in addition to the [build steps](https://docs.lando.dev/s
 ```yaml
 services:
   myservice:
-    type: go:1.19
+    type: go:1.24
     ssl: false
     command: tail -f /dev/null
 ```
@@ -26,7 +26,7 @@ If you want to actually launch a `go` application, consider setting the `command
 ```yaml
 services:
   myservice:
-    type: go:1.19
+    type: go:1.24
     command: go run /app/my-server.go
 ```
 
