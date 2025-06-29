@@ -176,29 +176,28 @@ jobs:
             const currentDefault = '$CURRENT_DEFAULT';
 
             // Create changelog entry
-            const changelogEntry = '* Added Go v' + latestVersion + ' support.' + '\\n' + '* Updated default Go version from v' + currentDefault + ' to v' + latestVersion + '.';
+            const changelogEntry = '* Updated Go to v' + latestVersion + ' (was v' + currentDefault + ')';
 
-            // Find the unreleased section and add the entry
-            const unreleasedRegex = /(## {{ UNRELEASED_VERSION }}[\\s\\S]*?)(\\n\\n## |\\n## |$)/;
-            const match = content.match(unreleasedRegex);
+            // Check if this entry already exists
+            if (content.includes(changelogEntry)) {
+              console.log('Changelog entry already exists');
+            } else {
+              // Find the unreleased header and insert after the blank line
+              const unreleasedHeaderRegex = /(## {{ UNRELEASED_VERSION }}[^\\n]*\\n\\n)/;
+              const match = content.match(unreleasedHeaderRegex);
 
-            if (match) {
-              const beforeSection = match[1];
-              const afterSection = match[2];
-
-              // Check if this entry already exists
-              if (!beforeSection.includes(changelogEntry)) {
-                // Add the new entry inside the unreleased section, above existing entries
-                const updatedSection = beforeSection + '\\n\\n' + changelogEntry + '\\n' + afterSection.trim();
-                content = content.replace(unreleasedRegex, updatedSection);
-
-                fs.writeFileSync(path, content);
+              if (match) {
+                const headerWithBlankLine = match[1];
+                const restOfContent = content.substring(match.index + headerWithBlankLine.length);
+                
+                // Insert the new entry right after the header and blank line
+                const updatedContent = headerWithBlankLine + changelogEntry + '\\n' + restOfContent;
+                
+                fs.writeFileSync(path, updatedContent);
                 console.log('Added changelog entry:', changelogEntry);
               } else {
-                console.log('Changelog entry already exists');
+                console.log('Could not find unreleased header in CHANGELOG.md');
               }
-            } else {
-              console.log('Could not find unreleased section in CHANGELOG.md');
             }
           "
           echo "Updated CHANGELOG.md"
