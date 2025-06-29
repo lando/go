@@ -4,7 +4,7 @@ services:
     type: go:1.19
     command: go run /app/http.go
   patch:
-    type: go:1.17.3
+    type: go:1.24.3
   cli:
     type: go:1.19
 
