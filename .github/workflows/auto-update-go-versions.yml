@@ -201,7 +201,6 @@ jobs:
                 console.log('Could not find unreleased header in CHANGELOG.md');
               }
             }
-            }
           "
           echo "Updated CHANGELOG.md"
 
