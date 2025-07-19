@@ -3,7 +3,7 @@
   "description": "A Lando plugin that provides a tight integration with go.",
   "version": "1.3.0",
   "author": "Mike Pirog @pirog",
-  "license": "GPL-3.0",
+  "license": "MIT",
   "repository": "lando/go",
   "bugs": "https://github.com/lando/go/issues/new/choose",
   "homepage": "https://github.com/lando/go",
