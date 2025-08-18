@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+* Added Go v1.25 support.
+* Set default Go version to v1.25.
 ## v1.3.0 - [June 29, 2025](https://github.com/lando/go/releases/tag/v1.3.0)
 
 * Added Go v1.20-v1.24 support
