@@ -22,8 +22,8 @@ Verification commands
 Run the following commands to validate things are rolling as they should.
 
 ```bash
-# Should use go:1.24 as specified in landofile
-lando exec defaults -- go version | grep go1.24
+# Should use go:1.26 as specified in landofile
+lando exec defaults -- go version | grep go1.26
 
 # Should run only on port 80 by default
 lando exec defaults -- curl http://localhost | grep HEART
