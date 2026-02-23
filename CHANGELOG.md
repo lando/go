@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+## v1.4.0 - [February 23, 2026](https://github.com/lando/go/releases/tag/v1.4.0)
+
 * Added Go v1.26 support.
 * Set default Go version to v1.26.
 * Added Go v1.25 support.
