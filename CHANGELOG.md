@@ -5,6 +5,7 @@
 * Added Go v1.25 support.
 * Updated vite from 5.4.20 to 5.4.21
 * Updated mdast-util-to-hast from 13.2.0 to 13.2.1
+* Updated lodash-es from 4.17.21 to 4.17.23
 ## v1.3.0 - [June 29, 2025](https://github.com/lando/go/releases/tag/v1.3.0)
 
 * Added Go v1.20-v1.24 support
