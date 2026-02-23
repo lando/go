@@ -5,15 +5,16 @@ const _ = require('lodash');
 
 // Define config directly
 const config = {
-  version: '1.25', // Default version
+  version: '1.26', // Default version
   supported: [
+    '1.26',
     '1.25',
     '1.24',
     '1.23',
-    '1.22',
   ],
   patchesSupported: true,
   legacy: [
+    '1.22',
     '1.21',
     '1.20',
     '1.19',
